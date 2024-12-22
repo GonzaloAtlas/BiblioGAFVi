@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface IAutoresRepository extends JpaRepository<Autor,Long> {
     Autor findBynombreAutorIgnoreCase(String nombreAutor);
-    List<Autor> findByFechaDeNacimientoLessThanEqualAndFechaFallecimientoGreaterThanEqual(int anoInicial, int anoFinal);
+    List<Autor> findByNacimientoLessThanEqualAndMuerteGreaterThanEqual(int anoInicial, int anoFinal);
 }

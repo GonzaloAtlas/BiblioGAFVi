@@ -1,13 +1,20 @@
 package com.biblioGAFVi.BiblioGAFVi.Model;
 
+import jakarta.persistence.*;
+
 import java.util.ArrayList;
 import java.util.List;
+@Entity
+@Table(name="autor")
 
 public class Autor {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private  Long id;
     private  String nombreAutor;
     private  int nacimiento;
     private  int muerte;
+    @OneToMany(mappedBy = "autor", cascade = CascadeType.ALL,fetch =FetchType.LAZY)
     private List<Libro> libro = new ArrayList<>();
 
     public Autor(DatosAutor datosAutor) {
@@ -37,11 +44,11 @@ public class Autor {
 
     public void setNombreAutor(String nombreAutor) {this.nombreAutor = nombreAutor;}
 
-    public int getNacimiento() {return nacimiento;}
+    public Integer getNacimiento() {return nacimiento;}
 
     public void setNacimiento(int nacimiento) {this.nacimiento = nacimiento;}
 
-    public int getMuerte() {return muerte;}
+    public Integer getMuerte() {return muerte;}
 
     public void setMuerte(int muerte) {this.muerte = muerte;}
 

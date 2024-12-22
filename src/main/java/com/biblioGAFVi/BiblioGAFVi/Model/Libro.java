@@ -1,17 +1,30 @@
 package com.biblioGAFVi.BiblioGAFVi.Model;
 
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "libros")
 public class Libro {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String titulo;
-    private String nombreAutor;
-    private String lenguaje;
-    private Double descargas;
 
+    @Column(name = "nombre_autor")
+    private String nombreAutor;
+
+    @Column(name = "idioma")
+    private String idioma;
+    private Double descargas;
+    @ManyToOne
+    @JoinColumn(name = "autor_id", nullable = false)
     private Autor autor;
+
+    public Libro(){}
 
     public Libro(DatosLibros datosLibros, Autor autor) {
         this.titulo =  datosLibros.titulo();
-        setLenguaje(datosLibros.idioma().toString());
+        setIdioma(datosLibros.idioma().toString());
         this.nombreAutor = autor.getNombreAutor() ;
         this.descargas = datosLibros.descargas();
         this.autor = autor;
@@ -22,7 +35,7 @@ public class Libro {
         return "-*-*-*-*-*-*-*-* DATOS DEL LIBRO -*-*-*-*-*-*-*-* " + "\n" +
                 "Titulo = " + titulo + "\n" +
                 "Autor = " + nombreAutor + "\n" +
-                "Idioma = " + lenguaje + "\n" +
+                "Idioma = " + idioma + "\n" +
                 "Numero de descargas = " + descargas + "\n" +
                 "-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-* " + "\n";
     }
@@ -39,9 +52,9 @@ public class Libro {
 
     public void setNombreAutor(String autor) {this.nombreAutor = autor;}
 
-    public String getLenguaje() {return lenguaje;}
+    public String getIdioma() {return idioma;}
 
-    public void setLenguaje(String lenguaje) {this.lenguaje = lenguaje;}
+    public void setIdioma(String idioma) {this.idioma = idioma;}
 
     public Double getDescargas() {return descargas;}
 
