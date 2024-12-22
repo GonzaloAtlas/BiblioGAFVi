@@ -1,14 +1,15 @@
 package com.biblioGAFVi.BiblioGAFVi.Principal;
 
+import com.biblioGAFVi.BiblioGAFVi.Model.DatosLibreria;
+import com.biblioGAFVi.BiblioGAFVi.Model.DatosLibros;
 import com.biblioGAFVi.BiblioGAFVi.Service.ConsumoAPI;
 import com.biblioGAFVi.BiblioGAFVi.Service.ConvierteDatos;
-
 import java.util.Scanner;
 
 public class Principal {
     private Scanner teclado = new Scanner(System.in);
     private ConsumoAPI consumoAPI = new ConsumoAPI();
-    private final String URL_BASE = "https://gutendex.com/books/";
+    private final String URL_BASE = "https://gutendex.com/books?search=";
     private ConvierteDatos conversor = new ConvierteDatos();
 
 
@@ -30,8 +31,8 @@ public class Principal {
             teclado.nextLine();
 
             switch (opcion) {
-                case 1:
-                    buscarLibroPorTitulo;
+                /*case 1:
+                    buscarLibroPorTitulo();
                     break;
                 case 2:
                     mostrarLibrosBuscados();
@@ -44,15 +45,23 @@ public class Principal {
                     break;
                 case 5:
                     mostrarLibrosEnUnDterminadoIdioma;
-                    break;
+                    break;*/
 
                 case 0:
-                    System.out.println("Ha decicido cerrar la aplicación... Gracias por usar BiublioGAFVi");
+                    System.out.println("Ha decicido cerrar la aplicación... Gracias por usar BiblioGAFVi");
                     break;
                 default:
                     System.out.println("Opción inválida, teclee solamente los numeros de las opciones anteriores");
             }
         }
+    }
 
+    private DatosLibreria getDatosLibreria() {
+        System.out.println("Escribe el nombre del libro que deseas buscar");
+        var nombreLibro = teclado.nextLine();
+        var json = consumoAPI.obtenerDatos(URL_BASE + nombreLibro.replace(" ", "+"));
+        System.out.println(json);
+        DatosLibros datos = conversor.obtenerDatos(json, DatosLibros.class);
+        return datos;
     }
 }
