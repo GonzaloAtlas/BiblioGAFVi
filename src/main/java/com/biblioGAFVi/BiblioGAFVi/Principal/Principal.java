@@ -6,6 +6,8 @@ import com.biblioGAFVi.BiblioGAFVi.Repository.ILibroRepository;
 import com.biblioGAFVi.BiblioGAFVi.Service.ConsumoAPI;
 import com.biblioGAFVi.BiblioGAFVi.Service.ConvierteDatos;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -14,10 +16,15 @@ import java.util.Scanner;
 public class Principal {
     private Scanner teclado = new Scanner(System.in);
     private ConsumoAPI consumoAPI = new ConsumoAPI();
-    private final String URL_BASE = "https://gutendex.com/books?search=";
+    private final String URL_BASE = "https://gutendex.com/books/?search=";
     private ConvierteDatos conversor = new ConvierteDatos();
     private IAutoresRepository repositorioDeAutores;
     private ILibroRepository repositorioDeLibros;
+
+    public Principal(IAutoresRepository repositorioDeAutores, ILibroRepository repositorioDeLibros) {
+        this.repositorioDeLibros = repositorioDeLibros;
+        this.repositorioDeAutores = repositorioDeAutores;
+    }
 
 
     public void muestraElMenu() {
@@ -73,18 +80,23 @@ public class Principal {
     // metodo para obtener datos del libro desde la api
     private DatosLibreria getDatosLibreria(String tituloLibro) {
         try {
-            var nombreLibro = teclado.nextLine(); //Interaccion con usuario
+            // En lugar de usar el metodo replace, se usa este metodo para generar la busqueda en la URL
+            String tituloCodificado = URLEncoder.encode(tituloLibro, StandardCharsets.UTF_8.toString());
             // Se crea variable para consumir API y concatenar la URL_BASE con la interaccion del usuario
-            var json = consumoAPI.obtenerDatos(URL_BASE + nombreLibro.replace(" ", "+"));
+            var json = consumoAPI.obtenerDatos(URL_BASE + tituloCodificado);
+            System.out.println(URL_BASE + tituloCodificado);
+            System.out.println(json);
+
             //Si la respueesta de la API es nula se muestra la respuesta:
             if (json == null || json.isEmpty()) {
-                System.out.println("La API no contiene datos relacionados con esa busqueda.");
-            } else // se imprime el resultado de la consulta
-            {
-                System.out.println(json);
-            }
+                System.out.println( "La API no contiene datos relacionados con esa busqueda.");
+                return null;
+            } /*else  se imprime el resultado de la consulta  {System.out.println(json);}*/
+
             // Se des-serializa la respuesta JSON
             DatosLibreria datosLibro = conversor.obtenerDatos(json, DatosLibreria.class);
+
+            // Si no se encuentran resultados...
             if (datosLibro == null || datosLibro.resultados().isEmpty()) {
                 System.out.println("No se encontraron resultados para el título: " + tituloLibro);
                 return null;
@@ -96,7 +108,7 @@ public class Principal {
         }
     }
     private void buscarLibroPorTitulo(){
-        System.out.println("Ingresa el nombre del libro:");
+        System.out.println("Escriba el titulo del libro que desea buscar: ");
         String tituloLibro = teclado.nextLine();
 
         DatosLibreria datos = getDatosLibreria(tituloLibro); // Obtiene datos de la API
@@ -104,11 +116,12 @@ public class Principal {
         if (datos != null) {
             System.out.println("Resultados de la busqueda");
             for (DatosLibros datosLibro : datos.resultados()){
+                System.out.println("-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*");
                 System.out.println("Título: " + datosLibro.titulo());
                 System.out.println("Autor(es): " + datosLibro.nombreAutor().stream()
                         .map(DatosAutor::nombreAutor).toList());
                 System.out.println("Lenguaje(s): " + datosLibro.idioma());
-                System.out.println("********************************");
+                System.out.println("-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*");
 
                 // Verificar si el libro ya existe en la base de datos
                 Optional<Libro> libro = repositorioDeLibros.findByTituloIgnoreCase(datosLibro.titulo().toLowerCase());
@@ -127,7 +140,7 @@ public class Principal {
                     for (DatosAutor autorDatos : datosLibro.nombreAutor()) {
                         // Verificar si el autor ya existe en la base de datos
                         Autor autor = obtenerAutor(autorDatos);
-                        nuevoLibro.setNombreAutor(String.valueOf(autor));  // Asociar el autor al libro
+                        nuevoLibro.setAutor(autor);  // Asociar el autor al libro
                         nuevoLibro.setNombreAutor(autor.getNombreAutor());  // Nombre del autor
                     }
 
@@ -154,10 +167,10 @@ public class Principal {
     private  void  mostrarLibrosBuscados(){
         List<Libro> libro =repositorioDeLibros.findAll();
         if (libro.isEmpty()){
-            System.out.println("No hay libros registrados");
+            System.out.println("No hay libros registrados en la base de datos, por favor, primero realice una busqueda.");
             return;
         }
-        System.out.println("los libros registrados son : ");
+        System.out.println("los libros registrados en la base de datos son : ");
         libro.stream()
                 .sorted(Comparator.comparing(Libro::getTitulo))
                 .forEach(System.out::println);
@@ -175,35 +188,33 @@ public class Principal {
         autores.stream()
                 .sorted(Comparator.comparing(Autor::getNombreAutor)) // Ordenar por nombre
                 .forEach(autor -> {
-                    System.out.println("-----------AUTORES----------");
+                    System.out.println("-*-*-*-*-*-*-*-*-*-*-*-*AUTOR-*-*-*-*-*-*-*-*-*-*-*-*");
                     System.out.println("Nombre del autor: " + autor.getNombreAutor());
 
                     // Obtener los libros asociados a este autor
                     List<Libro> libros = repositorioDeLibros.findByAutor(autor);
 
                     if (libros.isEmpty()) {
-                        System.out.println("Libros registrados: Ninguno");
+                        System.out.println("Libros asociados a este autor: Ninguno");
                     } else {
-                        System.out.println("Libros registrados: " +
+                        System.out.println("Libros asociados a este autor: ... " +
                                 libros.stream()
                                         .map(Libro::getTitulo)
                                         .toList()); // Mapea a los títulos de los libros
                     }
                     System.out.println("Fecha de nacimiento: " + autor.getNacimiento());
                     System.out.println("Fecha de fallecimiento: " +
-                            (autor.getMuerte() != null
-                                    ? autor.getMuerte()
-                                    : "Aún vive"));
+                            (autor.getMuerte() != null ? autor.getMuerte() : "El autor"));
 
-                    System.out.println("--------------------------------\n");
+                    System.out.println("-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*\n");
                 });
     }
     private void  mostrarAutoresVivosEnUnDeterminadoPeriodo(){
-        System.out.println("Escribe el año que  deseas realizar la busqueda: ");
+        System.out.println("Teclee el año en el que desee revisar que autores estaban vivos ");
         var fecha = teclado.nextInt();
         teclado.nextLine();
         if (fecha < 0){
-            System.out.println("Año invalido, registre otra fecha");
+            System.out.println("Año invalido, ingrese otra fecha");
             return;
         }
         List<Autor>autorPorFecha =
@@ -213,14 +224,14 @@ public class Principal {
             System.out.println("¡No hay autores registrados con esa fecha!");
             return;
         }
-        System.out.println("Autores vivos  en el año " + fecha + " Son :");
+        System.out.println("Los autores vivos  en el año " + fecha + " Son :");
         autorPorFecha.stream()
                 .sorted(Comparator.comparing(Autor::getNombreAutor))
                 .forEach(System.out::println);
     }
 
     private  void  mostrarLibrosEnUnDterminadoIdioma(){
-        System.out.println("Selecciona el idioma  que deseas buscar :");
+        System.out.println("Selecciona las siglas del idioma en el que deseas buscar libros :");
         String menu = """
                 es - Epañol
                 en - Ingles

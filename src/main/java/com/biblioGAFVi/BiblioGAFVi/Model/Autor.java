@@ -17,6 +17,8 @@ public class Autor {
     @OneToMany(mappedBy = "autor", cascade = CascadeType.ALL,fetch =FetchType.LAZY)
     private List<Libro> libro = new ArrayList<>();
 
+    public Autor(){}
+
     public Autor(DatosAutor datosAutor) {
         this.nombreAutor = datosAutor.nombreAutor();
         this.nacimiento = datosAutor.nacimiento()!= null ? datosAutor.nacimiento() : 0;
@@ -29,7 +31,7 @@ public class Autor {
         String fechaFallecimientoStr = (muerte != 0) ? String.valueOf(muerte) : "Aún vive";
 
 
-        return  "-*-*-*-*-*-*-*-* DATOS DEL AUTOR/AUTORES -*-*-*-*-*-*-*-*" +
+        return  "-*-*-*-*-*-*-*-* DATOS DEL AUTOR/AUTORES -*-*-*-*-*-*-*-*" + "\n"+
                 "Nombre del autor =" + nombreAutor + "\n"  +
                 "Fecha de nacimiento = " + fechaNacimientoStr + "\n" +
                 "Fecha de fallecimiento = " + fechaFallecimientoStr + "\n" +

@@ -10,17 +10,16 @@ public class Libro {
     private Long id;
     private String titulo;
 
+    @ManyToOne
+    @JoinColumn(name = "autor_id", nullable = false)
+    private Autor autor;
+
     @Column(name = "nombre_autor")
     private String nombreAutor;
 
     @Column(name = "idioma")
     private String idioma;
     private Double descargas;
-    @ManyToOne
-    @JoinColumn(name = "autor_id", nullable = false)
-    private Autor autor;
-
-    public Libro(){}
 
     public Libro(DatosLibros datosLibros, Autor autor) {
         this.titulo =  datosLibros.titulo();
@@ -29,6 +28,8 @@ public class Libro {
         this.descargas = datosLibros.descargas();
         this.autor = autor;
     }
+
+    public Libro(){}
 
     @Override
     public String toString() {
@@ -60,4 +61,11 @@ public class Libro {
 
     public void setDescargas(Double descargas) {this.descargas = descargas;}
 
+    public Autor getAutor() {return autor;}
+
+    public void setAutor(Autor autor) {this.autor = autor;}
+
+    public void Descargas(Integer numeroDeDescargas) {
+        this.descargas = descargas;
+    }
 }
