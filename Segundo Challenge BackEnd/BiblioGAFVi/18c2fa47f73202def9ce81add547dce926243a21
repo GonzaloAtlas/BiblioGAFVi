@@ -1,0 +1,23 @@
+[33mcommit 18c2fa47f73202def9ce81add547dce926243a21[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m)[m
+Author: Gonzalo Flores <qfbgonzaloflores96@hotmail.com>
+Date:   Sat Dec 21 22:05:34 2024 -0600
+
+    Creando clases de libros, autores y libreria para poder acceder a los JSON de cada resultado de la busqueda
+
+[33mcommit 7a9430e82045d289ad20f250814f10f3fcfef3ca[m
+Author: Gonzalo Flores <qfbgonzaloflores96@hotmail.com>
+Date:   Fri Dec 20 18:36:01 2024 -0600
+
+    Creando clase principal para mostrar menu y clases para obtener datos de libros y autores
+
+[33mcommit ab4aee4d81c9f2b1e28811385c98eb8977f67172[m
+Author: Gonzalo Flores <qfbgonzaloflores96@hotmail.com>
+Date:   Fri Dec 20 17:30:35 2024 -0600
+
+    Creando clases de consumo de API y conversion de datos
+
+[33mcommit 267d9eac0075219a6a0fd232572d75ace1783084[m
+Author: Gonzalo Flores <qfbgonzaloflores96@hotmail.com>
+Date:   Thu Dec 19 20:54:33 2024 -0600
+
+    Creanto repositorio en Github y vinculandolo con Git
